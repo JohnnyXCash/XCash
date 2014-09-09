@@ -1170,12 +1170,12 @@ void ListTransactions(const CWalletTx& wtx, const string& strAccount, int nMinDe
             {
 		// check if the account is a stealth address
 		string labl;
-		if(IsStealthAddress(strSentAccount))
+		if(IsStealthAddress(account))
 		{
 		    std::set<CStealthAddress>::iterator it;
 	    	    for (it = pwalletMain->stealthAddresses.begin(); it != pwalletMain->stealthAddresses.end(); ++it)
 	    	    {
-			if(it->Encoded() == strAccount)
+			if(it->Encoded() == account)
 			{
 			    labl = it->label;
 			    break;
@@ -1184,7 +1184,7 @@ void ListTransactions(const CWalletTx& wtx, const string& strAccount, int nMinDe
 		}
 		else
 		{
-		    labl = strSentAccount;
+		    labl = account;
 		}
 
                 Object entry;
