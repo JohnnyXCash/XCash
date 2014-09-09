@@ -1123,10 +1123,30 @@ void ListTransactions(const CWalletTx& wtx, const string& strAccount, int nMinDe
     // Sent
     if ((!wtx.IsCoinStake()) && (!listSent.empty() || nFee != 0) && (fAllAccounts || strAccount == strSentAccount))
     {
+	// check if the account is a stealth address
+	string labl;
+	if(IsStealthAddress(strSentAccount))
+	{
+	    std::set<CStealthAddress>::iterator it;
+    	    for (it = pwalletMain->stealthAddresses.begin(); it != pwalletMain->stealthAddresses.end(); ++it)
+    	    {
+		if(it->Encoded() == strSentAccount)
+		{
+		    labl = it->label;
+		    break;
+		}
+	    }
+	}
+	else
+	{
+	    labl = strSentAccount;
+	}
+	
         BOOST_FOREACH(const PAIRTYPE(CTxDestination, int64_t)& s, listSent)
         {
             Object entry;
             entry.push_back(Pair("account", strSentAccount));
+	    entry.push_back(Pair("label", labl));
             MaybePushAddress(entry, s.first);
             entry.push_back(Pair("category", "send"));
             entry.push_back(Pair("amount", ValueFromAmount(-s.second)));
@@ -1148,8 +1168,28 @@ void ListTransactions(const CWalletTx& wtx, const string& strAccount, int nMinDe
                 account = pwalletMain->mapAddressBook[r.first];
             if (fAllAccounts || (account == strAccount))
             {
+		// check if the account is a stealth address
+		string labl;
+		if(IsStealthAddress(strSentAccount))
+		{
+		    std::set<CStealthAddress>::iterator it;
+	    	    for (it = pwalletMain->stealthAddresses.begin(); it != pwalletMain->stealthAddresses.end(); ++it)
+	    	    {
+			if(it->Encoded() == strAccount)
+			{
+			    labl = it->label;
+			    break;
+			}
+		    }
+		}
+		else
+		{
+		    labl = strSentAccount;
+		}
+
                 Object entry;
                 entry.push_back(Pair("account", account));
+		entry.push_back(Pair("label", labl));
                 MaybePushAddress(entry, r.first);
                 if (wtx.IsCoinBase() || wtx.IsCoinStake())
                 {

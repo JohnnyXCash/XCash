@@ -1893,12 +1893,25 @@ bool CWallet::UpdateStealthAddress(std::string &addr, std::string &label, bool a
     if (!sxAddr.SetEncoded(addr))
         return false;
     
-    std::set<CStealthAddress>::iterator it;
-    it = stealthAddresses.find(sxAddr);
+    //std::set<CStealthAddress>::iterator it;
+    //it = stealthAddresses.find(sxAddr);
     
     ChangeType nMode = CT_UPDATED;
     CStealthAddress sxFound;
-    if (it == stealthAddresses.end())
+    bool bFound = false;
+
+    std::set<CStealthAddress>::iterator it;
+    for (it = stealthAddresses.begin(); it != stealthAddresses.end(); ++it)
+    {
+	if(it->Encoded() == addr)
+	{
+	    bFound = true;
+	    sxFound = const_cast<CStealthAddress&>(*it);
+	    break;
+	}
+    }
+
+    if(!bFound) //if (it == stealthAddresses.end())
     {
         if (addIfNotExist)
         {
@@ -1913,7 +1926,7 @@ bool CWallet::UpdateStealthAddress(std::string &addr, std::string &label, bool a
         };
     } else
     {
-        sxFound = const_cast<CStealthAddress&>(*it);
+        //sxFound = const_cast<CStealthAddress&>(*it);
         
         if (sxFound.label == label)
         {
@@ -1921,12 +1934,12 @@ bool CWallet::UpdateStealthAddress(std::string &addr, std::string &label, bool a
             return true;
         };
         
-        it->label = label; // update in .stealthAddresses
+        sxFound.label = label; //it->label = label; // update in .stealthAddresses
         
         if (sxFound.scan_secret.size() == ec_secret_size)
         {
             printf("UpdateStealthAddress: todo - update owned stealth address.\n");
-            return false;
+            //return false;
         };
     };
     
