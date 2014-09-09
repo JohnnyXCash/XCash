@@ -352,7 +352,7 @@ Value sendtoaddress(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() < 2 || params.size() > 5)
         throw runtime_error(
-            "sendtoaddress <XCashaddress> <amount> [narration] [comment] [comment-to]\n"
+            "sendtoaddress <XCashaddress> <amount> [comment] [comment-to] [narration]\n"
             "<amount> is a real and is rounded to the nearest 0.000001"
             + HelpRequiringPassphrase());
 
@@ -371,19 +371,20 @@ Value sendtoaddress(const Array& params, bool fHelp)
         int64_t nAmount = AmountFromValue(params[1]);
     
         CWalletTx wtx;
-    
-        std::string sNarr;
+        
+        // Wallet comments
         if (params.size() > 2 && params[2].type() != null_type && !params[2].get_str().empty())
-            sNarr = params[2].get_str();
+            wtx.mapValue["comment"] = params[2].get_str();
+        if (params.size() > 3 && params[3].type() != null_type && !params[3].get_str().empty())
+            wtx.mapValue["to"]      = params[3].get_str();
+
+        std::string sNarr;
+        if (params.size() > 4 && params[4].type() != null_type && !params[4].get_str().empty())
+            sNarr = params[4].get_str();
     
         if (sNarr.length() > 24)
             throw runtime_error("Narration must be 24 characters or less.");
-    
-        // Wallet comments
-        if (params.size() > 3 && params[3].type() != null_type && !params[3].get_str().empty())
-            wtx.mapValue["comment"] = params[3].get_str();
-        if (params.size() > 4 && params[4].type() != null_type && !params[4].get_str().empty())
-            wtx.mapValue["to"]      = params[4].get_str();
+
 
         if (pwalletMain->IsLocked())
             throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Please enter the wallet passphrase with walletpassphrase first.");
@@ -731,7 +732,7 @@ Value sendfrom(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() < 3 || params.size() > 7)
         throw runtime_error(
-            "sendfrom <fromaccount> <toXCashaddress> <amount> [minconf=1] [narration] [comment] [comment-to]\n"
+            "sendfrom <fromaccount> <toXCashaddress> <amount> [minconf=1] [comment] [comment-to] [narration]\n"
             "<amount> is a real and is rounded to the nearest 0.000001"
             + HelpRequiringPassphrase());
 
@@ -748,17 +749,17 @@ Value sendfrom(const Array& params, bool fHelp)
     CWalletTx wtx;
     wtx.strFromAccount = strAccount;
     
-    std::string sNarr;
     if (params.size() > 4 && params[4].type() != null_type && !params[4].get_str().empty())
-        sNarr = params[4].get_str();
+        wtx.mapValue["comment"] = params[4].get_str();
+    if (params.size() > 5 && params[5].type() != null_type && !params[5].get_str().empty())
+        wtx.mapValue["to"]      = params[5].get_str();
+
+    std::string sNarr;
+    if (params.size() > 6 && params[6].type() != null_type && !params[6].get_str().empty())
+        sNarr = params[6].get_str();
     
     if (sNarr.length() > 24)
         throw runtime_error("Narration must be 24 characters or less.");
-    
-    if (params.size() > 5 && params[5].type() != null_type && !params[5].get_str().empty())
-        wtx.mapValue["comment"] = params[5].get_str();
-    if (params.size() > 6 && params[6].type() != null_type && !params[6].get_str().empty())
-        wtx.mapValue["to"]      = params[6].get_str();
 
     EnsureWalletIsUnlocked();
 
@@ -2200,7 +2201,7 @@ Value sendtostealthaddress(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() < 2 || params.size() > 5)
         throw runtime_error(
-            "sendtostealthaddress <stealth_address> <amount> [narration] [comment] [comment-to]\n"
+            "sendtostealthaddress <stealth_address> <amount> [comment] [comment-to] [narration]\n"
             "<amount> is a real and is rounded to the nearest 0.000001"
             + HelpRequiringPassphrase());
     
@@ -2209,13 +2210,6 @@ Value sendtostealthaddress(const Array& params, bool fHelp)
     
     std::string sEncoded = params[0].get_str();
     int64_t nAmount = AmountFromValue(params[1]);
-    
-    std::string sNarr;
-    if (params.size() > 2 && params[2].type() != null_type && !params[2].get_str().empty())
-        sNarr = params[2].get_str();
-    
-    if (sNarr.length() > 24)
-        throw runtime_error("Narration must be 24 characters or less.");
     
     CStealthAddress sxAddr;
     Object result;
@@ -2228,10 +2222,17 @@ Value sendtostealthaddress(const Array& params, bool fHelp)
     
     
     CWalletTx wtx;
+    if (params.size() > 2 && params[2].type() != null_type && !params[2].get_str().empty())
+        wtx.mapValue["comment"] = params[2].get_str();
     if (params.size() > 3 && params[3].type() != null_type && !params[3].get_str().empty())
-        wtx.mapValue["comment"] = params[3].get_str();
+        wtx.mapValue["to"]      = params[3].get_str();
+
+    std::string sNarr;
     if (params.size() > 4 && params[4].type() != null_type && !params[4].get_str().empty())
-        wtx.mapValue["to"]      = params[4].get_str();
+        sNarr = params[4].get_str();
+    
+    if (sNarr.length() > 24)
+        throw runtime_error("Narration must be 24 characters or less.");
     
     std::string sError;
     if (!pwalletMain->SendStealthMoneyToDestination(sxAddr, nAmount, sNarr, wtx, sError))
