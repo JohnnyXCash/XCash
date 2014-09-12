@@ -2062,8 +2062,9 @@ Value liststealthaddresses(const Array& params, bool fHelp)
     
     if (fShowSecrets)
     {
-        if (pwalletMain->IsLocked())
-            throw runtime_error("Failed: Wallet must be unlocked.");
+	EnsureWalletIsUnlocked();
+        //if (pwalletMain->IsLocked())
+        //    throw runtime_error("Failed: Wallet must be unlocked.");
     };
     
     Object result;
