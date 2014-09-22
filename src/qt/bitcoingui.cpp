@@ -70,39 +70,6 @@ extern CWallet* pwalletMain;
 extern int64_t nLastCoinStakeSearchInterval;
 double GetPoSKernelPS();
 
-#define VERTICAL_TOOBAR_STYLESHEET "QToolBar {\
-border:none;\
-height:100%;\
-padding-top:20px;\
-text-align: left;\
-}\
-QToolButton {\
-min-width:180px;\
-background-color: transparent;\
-border: 1px solid #3A3939;\
-border-radius: 3px;\
-margin: 3px;\
-padding-left: 5px;\
-/*padding-right:50px;*/\
-padding-top:5px;\
-width:100%;\
-text-align: left;\
-padding-bottom:5px;\
-}\
-QToolButton:pressed {\
-background-color: #4A4949;\
-border: 1px solid silver;\
-}\
-QToolButton:hover {\
-background-color: #4A4949;\
-border: 1px solid gray;\
-}"
-#define HORIZONTAL_TOOLBAR_STYLESHEET "QToolBar {\
-    border: 1px solid #393838;\
-    background: 1px solid #010101;\
-    font-weight: bold;\
-}"
-
 ActiveLabel::ActiveLabel(const QString & text, QWidget * parent):
     QLabel(parent){}
 
@@ -126,7 +93,7 @@ BitcoinGUI::BitcoinGUI(QWidget *parent):
     rpcConsole(0),
     nWeight(0)
 {
-    resize(950, 550);
+    resize(750, 450);
     setWindowTitle(tr("XCash") + " - " + tr("Wallet"));
 #ifndef Q_OS_MAC
     qApp->setWindowIcon(QIcon(":icons/bitcoin"));
@@ -136,16 +103,8 @@ BitcoinGUI::BitcoinGUI(QWidget *parent):
     QApplication::setAttribute(Qt::AA_DontShowIconsInMenus);
 #endif
 
-    // TODO: Theme switching :)
-    QFile f(":qdarkstyle/style.qss");
-    if (f.exists())
-    {
-        f.open(QFile::ReadOnly | QFile::Text);
-        QTextStream ts(&f);
-        qApp->setStyleSheet(ts.readAll());
-    }
-    else
-        QApplication::setStyle(QStyleFactory::create("Fusion"));
+    setObjectName("xcashWallet");
+    setStyleSheet("#xcashWallet { background-image: url(:/images/xcashshadow); background-position: right bottom; background-repeat: no-repeat; background-color: #ffffff; }");
 
     // Accept D&D of URIs
     setAcceptDrops(true);
@@ -164,6 +123,9 @@ BitcoinGUI::BitcoinGUI(QWidget *parent):
 
     // Create tabs
     overviewPage = new OverviewPage();
+    overviewPage->setObjectName("OverviewPage");
+    overviewPage->setStyleSheet("#OverviewPage { background-image: url(:/images/xcashshadow); background-position: right bottom; background-color:#ffffff;}");
+
     chatWindow = new ChatWindow(this);
 
     transactionsPage = new QWidget(this);
@@ -190,7 +152,7 @@ BitcoinGUI::BitcoinGUI(QWidget *parent):
     centralWidget->addWidget(messagePage);
     centralWidget->addWidget(chatWindow);
     setCentralWidget(centralWidget);
-
+    
     // Create status bar
     statusBar();
 
@@ -315,6 +277,12 @@ void BitcoinGUI::createActions()
     messageAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_6));
     //tabGroup->addAction(messageAction);
 
+    xvisionAction = new QAction(QIcon(":/icons/XCash"), tr("x&Vision"), this);
+    xvisionAction->setToolTip(tr("Feed for qualified stakeholders"));
+    xvisionAction->setCheckable(true);
+    xvisionAction->setEnabled(false);
+    tabGroup->addAction(xvisionAction);
+
     chatAction = new QAction(QIcon(":/icons/xcash"), tr("#&XCASH IRC "), this);
     chatAction->setToolTip(tr("#XCASH IRC"));
     chatAction->setCheckable(true);
@@ -418,10 +386,19 @@ void BitcoinGUI::createMenuBar()
 void BitcoinGUI::createToolBars()
 {
     mainIcon = new QLabel (this);
+    mainIcon->setObjectName("mainIcon");
+    mainIcon->setStyleSheet("#mainIcon { width:292;background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 #BCBDBE, stop:1.0 #F3F4F4);border:0px; }");
     mainIcon->setPixmap(QPixmap(":images/sdc-vertical"));
     mainIcon->show();
 
     mainToolbar = addToolBar(tr("Tabs toolbar"));
+
+    addToolBar(Qt::LeftToolBarArea,mainToolbar);
+    mainToolbar->setOrientation(Qt::Vertical);
+    mainToolbar->setMovable( false );
+    mainToolbar->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    mainToolbar->setIconSize(QSize(50,25));
+
     mainToolbar->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     mainToolbar->addWidget(mainIcon);
     mainToolbar->addAction(overviewAction);
@@ -430,16 +407,23 @@ void BitcoinGUI::createToolBars()
     mainToolbar->addAction(historyAction);
     mainToolbar->addAction(addressBookAction);
     //mainToolbar->addAction(messageAction);
+    mainToolbar->addAction(xvisionAction);
     mainToolbar->addAction(chatAction);
 
-    secondaryToolbar = addToolBar(tr("Actions toolbar"));
-    secondaryToolbar->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-    secondaryToolbar->addAction(exportAction);
+    //secondaryToolbar = addToolBar(tr("Actions toolbar"));
+    //addToolBar(Qt::LeftToolBarArea, secondaryToolbar);
+    //secondaryToolbar->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    //secondaryToolbar->setIconSize(QSize(50,25));
+    //secondaryToolbar->addAction(exportAction);
+    mainToolbar->addAction(exportAction);
 
-    connect(mainToolbar,      SIGNAL(orientationChanged(Qt::Orientation)), this, SLOT(mainToolbarOrientation(Qt::Orientation)));
-    connect(secondaryToolbar, SIGNAL(orientationChanged(Qt::Orientation)), this, SLOT(secondaryToolbarOrientation(Qt::Orientation)));
+    //connect(mainToolbar,      SIGNAL(orientationChanged(Qt::Orientation)), this, SLOT(mainToolbarOrientation(Qt::Orientation)));
+    //connect(secondaryToolbar, SIGNAL(orientationChanged(Qt::Orientation)), this, SLOT(secondaryToolbarOrientation(Qt::Orientation)));
+
+    mainToolbar->setStyleSheet("QToolBar { background: #5D5D5D; border:none; } QToolButton { min-width:342px;min-height:50px;color:#ffffff;background-color: #5D5D5D; font-weight:bold;margin:0px;padding-left:50px;border:none;border-bottom-width: 2px; border-bottom-color: #343431;} QToolButton:hover { min-width:342px;color: #ffffff; background-color: #343431; margin:0px; padding-left:50px; border:none; } QToolButton:checked { min-width:342px; color: #ffffff; background-color: #343431; margin:0px; padding-left:50px; border-bottom-width: 2px; border-bottom-color: #343431; } QToolButton:pressed { min-width:342px; color: #ffffff; background-color: #343431; margin:0px; padding-left:50px; border-bottom-width: 2px; border-bottom-color: #343431; } QToolButton:selected { min-width:342px; color: #ffffff; background-color: #343431; margin:0px; padding-left:50px; border-bottom-width: 2px; border-bottom-color: #343431; }");
+    
     mainToolbarOrientation(mainToolbar->orientation());
-    secondaryToolbarOrientation(secondaryToolbar->orientation());
+    //secondaryToolbarOrientation(secondaryToolbar->orientation());
 }
 
 void BitcoinGUI::setClientModel(ClientModel *clientModel)
@@ -898,7 +882,6 @@ void BitcoinGUI::gotoChatPage()
 {
     chatAction->setChecked(true);
     centralWidget->setCurrentWidget(chatWindow);
-    exportAction->setVisible(false);
     exportAction->setEnabled(false);
     disconnect(exportAction, SIGNAL(triggered()), 0, 0);
 }
@@ -968,7 +951,7 @@ void BitcoinGUI::mainToolbarOrientation(Qt::Orientation orientation)
     {
         mainIcon->setPixmap(QPixmap(":images/sdc-horizontal"));
         mainIcon->show();
-        mainToolbar->setStyleSheet(HORIZONTAL_TOOLBAR_STYLESHEET);
+        //mainToolbar->setStyleSheet(HORIZONTAL_TOOLBAR_STYLESHEET);
         messageAction->setIconText(tr("&Messages"));
     }
     else
@@ -976,14 +959,14 @@ void BitcoinGUI::mainToolbarOrientation(Qt::Orientation orientation)
         mainIcon->setPixmap(QPixmap(":images/sdc-vertical"));
         mainIcon->show();
 
-        mainToolbar->setStyleSheet(VERTICAL_TOOBAR_STYLESHEET);
-        messageAction->setIconText(tr("Encrypted &Messages"));
+        //mainToolbar->setStyleSheet(VERTICAL_TOOBAR_STYLESHEET);
+        //messageAction->setIconText(tr("Encrypted &Messages"));
     }
 }
 
 void BitcoinGUI::secondaryToolbarOrientation(Qt::Orientation orientation)
 {
-    secondaryToolbar->setStyleSheet(orientation == Qt::Horizontal ? HORIZONTAL_TOOLBAR_STYLESHEET : VERTICAL_TOOBAR_STYLESHEET);
+    //secondaryToolbar->setStyleSheet(orientation == Qt::Horizontal ? HORIZONTAL_TOOLBAR_STYLESHEET : VERTICAL_TOOBAR_STYLESHEET);
 }
 
 void BitcoinGUI::setEncryptionStatus(int status)

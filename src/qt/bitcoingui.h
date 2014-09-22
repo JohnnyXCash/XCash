@@ -128,6 +128,7 @@ private:
     QAction *aboutQtAction;
     QAction *openRPCConsoleAction;
     QAction *chatAction;
+    QAction *xvisionAction;
 
     QSystemTrayIcon *trayIcon;
     Notificator *notificator;
