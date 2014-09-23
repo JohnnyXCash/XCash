@@ -387,7 +387,7 @@ void BitcoinGUI::createToolBars()
 {
     mainIcon = new QLabel (this);
     mainIcon->setObjectName("mainIcon");
-    mainIcon->setStyleSheet("#mainIcon { width:292;background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 #BCBDBE, stop:1.0 #F3F4F4);border:0px; }");
+    mainIcon->setStyleSheet("#mainIcon { width:146;background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 #BCBDBE, stop:1.0 #F3F4F4);border:0px; }");
     mainIcon->setPixmap(QPixmap(":images/sdc-vertical"));
     mainIcon->show();
 
@@ -420,7 +420,7 @@ void BitcoinGUI::createToolBars()
     //connect(mainToolbar,      SIGNAL(orientationChanged(Qt::Orientation)), this, SLOT(mainToolbarOrientation(Qt::Orientation)));
     //connect(secondaryToolbar, SIGNAL(orientationChanged(Qt::Orientation)), this, SLOT(secondaryToolbarOrientation(Qt::Orientation)));
 
-    mainToolbar->setStyleSheet("QToolBar { background: #5D5D5D; border:none; } QToolButton { min-width:342px;min-height:50px;color:#ffffff;background-color: #5D5D5D; font-weight:bold;margin:0px;padding-left:50px;border:none;border-bottom-width: 2px; border-bottom-color: #343431;} QToolButton:hover { min-width:342px;color: #ffffff; background-color: #343431; margin:0px; padding-left:50px; border:none; } QToolButton:checked { min-width:342px; color: #ffffff; background-color: #343431; margin:0px; padding-left:50px; border-bottom-width: 2px; border-bottom-color: #343431; } QToolButton:pressed { min-width:342px; color: #ffffff; background-color: #343431; margin:0px; padding-left:50px; border-bottom-width: 2px; border-bottom-color: #343431; } QToolButton:selected { min-width:342px; color: #ffffff; background-color: #343431; margin:0px; padding-left:50px; border-bottom-width: 2px; border-bottom-color: #343431; }");
+    mainToolbar->setStyleSheet("QToolBar { background: #5D5D5D; border:none; } QToolButton { min-width:171px;min-height:50px;color:#ffffff;background-color: #5D5D5D; font-weight:bold;margin:0px;padding-left:50px;border:none;border-bottom-width: 2px; border-bottom-color: #343431;} QToolButton:hover { min-width:171px;color: #ffffff; background-color: #343431; margin:0px; padding-left:50px; border:none; } QToolButton:checked { min-width:171px; color: #ffffff; background-color: #343431; margin:0px; padding-left:50px; border-bottom-width: 2px; border-bottom-color: #343431; } QToolButton:pressed { min-width:171px; color: #ffffff; background-color: #343431; margin:0px; padding-left:50px; border-bottom-width: 2px; border-bottom-color: #343431; } QToolButton:selected { min-width:171px; color: #ffffff; background-color: #343431; margin:0px; padding-left:50px; border-bottom-width: 2px; border-bottom-color: #343431; }");
     
     mainToolbarOrientation(mainToolbar->orientation());
     //secondaryToolbarOrientation(secondaryToolbar->orientation());
